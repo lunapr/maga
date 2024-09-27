@@ -18,3 +18,5 @@ const wagmiConfig = createClient({
 
 const ethereumClient = new EthereumClient(wagmiConfig, chains)
 const web3modal = new Web3Modal({ projectId }, ethereumClient)
+
+console.log(web3modal)
