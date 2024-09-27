@@ -1,22 +1,42 @@
-import { configureChains, createClient } from '@wagmi/core'
-import { arbitrum, mainnet, polygon } from '@wagmi/core/chains'
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { Web3Modal } from '@web3modal/html'
+import { createAppKit } from '@reown/appkit'
+import { mainnet, arbitrum } from '@reown/appkit/networks'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const chains = [arbitrum, mainnet, polygon]
-
-// Replace project ID
+// 1. Get a project ID at https://cloud.reown.com
 const projectId = '0bb6cec1d957f7f04be82de3b98bce7d'
 
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+export const networks = [mainnet, arbitrum]
 
-const wagmiConfig = createClient({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, version: 1, chains }),
-  publicClient,
+// 2. Set up Wagmi adapter
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks
 })
 
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
-const web3modal = new Web3Modal({ projectId }, ethereumClient)
+// 3. Configure the metadata
+const metadata = {
+  name: 'AppKit',
+  description: 'AppKit Example',
+  url: 'https://example.com', // origin must match your domain & subdomain
+  icons: ['https://avatars.githubusercontent.com/u/179229932']
+}
 
-console.log(web3modal)
+// 3. Create the modal
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks: [mainnet, arbitrum],
+  metadata,
+  projectId,
+  features: {
+    analytics: true // Optional - defaults to your Cloud configuration
+  }
+})
+
+// 4. Trigger modal programaticaly
+const openConnectModalBtn = document.getElementById('open-connect-modal')
+const openNetworkModalBtn = document.getElementById('open-network-modal')
+
+openConnectModalBtn.addEventListener('click', () => modal.open())
+openNetworkModalBtn.addEventListener('click', () => modal.open({ view: 'Networks' }))
+
+// 5. Alternatively use w3m component buttons within the index.html file
